@@ -1,33 +1,64 @@
 #! /bin/bash
-set -x
+#set -x
+NAME="pingtunnel"
 
-CGO_ENABLED=0 go build
-zip pingtunnel_linux64.zip pingtunnel
+export GO111MODULE=off
 
-GOOS=darwin GOARCH=amd64 go build
-zip pingtunnel_mac.zip pingtunnel
+#go tool dist list
+build_list=$(go tool dist list)
 
-GOOS=windows GOARCH=amd64 go build
-zip pingtunnel_windows64.zip pingtunnel.exe
+rm pack -rf
+rm pack.zip -f
+mkdir pack
 
-GOOS=linux GOARCH=mipsle go build
-zip pingtunnel_mipsle.zip pingtunnel
+go get -u -v github.com/esrrhs/pingtunnel/...
+last=`pwd`
+cd $GOPATH/src/golang.org/x
+for dir in `ls`; do
+  cd $dir
+  git pull
+  cd ..
+done
+cd $last
 
-GOOS=linux GOARCH=arm go build
-zip pingtunnel_arm.zip pingtunnel
+for line in $build_list; do
+  os=$(echo "$line" | awk -F"/" '{print $1}')
+  arch=$(echo "$line" | awk -F"/" '{print $2}')
+  echo "os="$os" arch="$arch" start build"
+  if [ $os == "android" ]; then
+    continue
+  fi
+  if [ $os == "ios" ]; then
+    continue
+  fi
+  if [ $arch == "wasm" ]; then
+    continue
+  fi
+  CGO_ENABLED=0 GOOS=$os GOARCH=$arch go build -ldflags="-s -w"
+  if [ $? -ne 0 ]; then
+    echo "os="$os" arch="$arch" build fail"
+    exit 1
+  fi
+  if [ $os = "windows" ]; then
+    zip ${NAME}_"${os}"_"${arch}"".zip" $NAME".exe"
+    if [ $? -ne 0 ]; then
+      echo "os="$os" arch="$arch" zip fail"
+      exit 1
+    fi
+    mv ${NAME}_"${os}"_"${arch}"".zip" pack/
+    rm $NAME".exe" -f
+  else
+    zip ${NAME}_"${os}"_"${arch}"".zip" $NAME
+    if [ $? -ne 0 ]; then
+      echo "os="$os" arch="$arch" zip fail"
+      exit 1
+    fi
+    mv ${NAME}_"${os}"_"${arch}"".zip" pack/
+    rm $NAME -f
+  fi
+  echo "os="$os" arch="$arch" done build"
+done
 
-GOOS=linux GOARCH=mips go build
-zip pingtunnel_mips.zip pingtunnel
+zip pack.zip pack/ -r
 
-GOOS=windows GOARCH=386 go build
-zip pingtunnel_windows32.zip pingtunnel.exe
-
-GOOS=linux GOARCH=arm64 go build
-zip pingtunnel_arm64.zip pingtunnel
-
-GOOS=linux GOARCH=mips64 go build
-zip pingtunnel_mips64.zip pingtunnel
-
-GOOS=linux GOARCH=mips64le go build
-zip pingtunnel_mips64le.zip pingtunnel
-
+echo "all done"

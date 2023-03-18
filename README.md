@@ -6,7 +6,7 @@
 [<img src="https://img.shields.io/github/v/release/esrrhs/pingtunnel">](https://github.com/esrrhs/pingtunnel/releases)
 [<img src="https://img.shields.io/github/downloads/esrrhs/pingtunnel/total">](https://github.com/esrrhs/pingtunnel/releases)
 [<img src="https://img.shields.io/docker/pulls/esrrhs/pingtunnel">](https://hub.docker.com/repository/docker/esrrhs/pingtunnel)
-[<img src="https://img.shields.io/github/workflow/status/esrrhs/pingtunnel/Go">](https://github.com/esrrhs/pingtunnel/actions)
+[<img src="https://img.shields.io/github/actions/workflow/status/esrrhs/pingtunnel/go.yml?branch=master">](https://github.com/esrrhs/pingtunnel/actions)
 
 Pingtunnel is a tool that send TCP/UDP traffic over ICMP.
 
@@ -67,15 +67,6 @@ docker run --name pingtunnel-server -d --privileged --network host --restart=alw
 ```
 docker run --name pingtunnel-client -d --restart=always -p 1080: 1080 esrrhs/pingtunnel ./pingtunnel -type client -l: 1080 -s www.yourserver.com -sock5 1 -key 123456
 ```
-
-## Test
-
-download the centos image [centos mirror](http://centos.s.uw.edu/centos/8.4.2105/isos/x86_64/CentOS-8.4.2105-x86_64-dvd1.iso)
-
-|              | wget     | ss       | kcp     | pingtunnel |
-| ------------ | -------- | -------- | ------- | ---------- |
-| AlibabaCloud | 26.6KB/s | 31.8KB/s | 606KB/s | 5.64MB/s   |
-
 
 ## Thanks for free JetBrains Open Source license
 

@@ -20,6 +20,7 @@ Pingtunnel is a tool that send TCP/UDP traffic over ICMP.
 
 -   First prepare a server with a public IP, such as EC2 on AWS, assuming the domain name or public IP is www.yourserver.com
 -   Download the corresponding installation package from [releases](https://github.com/esrrhs/pingtunnel/releases), such as pingtunnel_linux64.zip, then decompress and execute with **root** privileges
+-   “-key” parameter is **int** type, only supports numbers between 0-2147483647
 
 ```
 sudo wget (link of latest release)
@@ -38,23 +39,25 @@ echo 1 > /proc/sys/net/ipv4/icmp_echo_ignore_all
 -   Download the corresponding installation package from [releases](https://github.com/esrrhs/pingtunnel/releases), such as pingtunnel_windows64.zip, and decompress it
 -   Then run with **administrator** privileges. The commands corresponding to different forwarding functions are as follows.
 -   If you see a log of ping pong, the connection is normal
+-   “-key” parameter is **int** type, only supports numbers between 0-2147483647
+
 
 #### Forward sock5
 
 ```
-pingtunnel.exe -type client -l: 4455 -s www.yourserver.com -sock5 1
+pingtunnel.exe -type client -l :4455 -s www.yourserver.com -sock5 1
 ```
 
 #### Forward tcp
 
 ```
-pingtunnel.exe -type client -l: 4455 -s www.yourserver.com -t www.yourserver.com:4455 -tcp 1
+pingtunnel.exe -type client -l :4455 -s www.yourserver.com -t www.yourserver.com:4455 -tcp 1
 ```
 
 #### Forward udp
 
 ```
-pingtunnel.exe -type client -l: 4455 -s www.yourserver.com -t www.yourserver.com:4455
+pingtunnel.exe -type client -l :4455 -s www.yourserver.com -t www.yourserver.com:4455
 ```
 
 ### Use Docker
@@ -65,7 +68,7 @@ docker run --name pingtunnel-server -d --privileged --network host --restart=alw
 ```
 -   client:
 ```
-docker run --name pingtunnel-client -d --restart=always -p 1080: 1080 esrrhs/pingtunnel ./pingtunnel -type client -l: 1080 -s www.yourserver.com -sock5 1 -key 123456
+docker run --name pingtunnel-client -d --restart=always -p 1080:1080 esrrhs/pingtunnel ./pingtunnel -type client -l :1080 -s www.yourserver.com -sock5 1 -key 123456
 ```
 
 ## Thanks for free JetBrains Open Source license
